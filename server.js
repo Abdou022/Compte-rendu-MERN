@@ -17,9 +17,9 @@ const articles = [
   { id: 3, title: "Tester une API avec Postman", author: "Aya" },
 ];
 // GET / api/ articles -> tous les articles
-// app.get("/api/articles", (req, res) => {
-//   res.json({ total: articles.length, articles: articles });
-// });
+app.get("/api/articles", (req, res) => {
+  res.json({ total: articles.length, articles: articles });
+});
 
 //Étape 4 : un seul article
 // GET / api/ articles /2 -> l’article dont l’id vaut 2
@@ -59,6 +59,71 @@ app.post("/api/articles", (req, res) => {
   prochainId = prochainId + 1;
   articles.push(nouvelArticle);
   res.status(201).json({ message: "Article créé", article: nouvelArticle });
+});
+
+// Exercice 1:
+const users = [
+  { id: 1, name: "Aya", email: "aya@gmail.com" },
+  { id: 2, name: "Ahmed", email: "ahmed@gmail.com" },
+  { id: 3, name: "Abderrahmen", email: "abderrahmen@gmail.com" },
+];
+
+// 1. GET /about
+
+app.get("/about", (req, res) => {
+  res.json({
+    name: "mon-api-blog",
+    author: "Abderrahmen Attia",
+    version: "1.0.0",
+  });
+});
+
+// 2. GET /users
+app.get("/api/users", (req, res) => {
+  res.json({ total: users.length, users: users });
+});
+
+// 3. GET /users/:id
+app.get("/api/users/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const user = users.find((user) => user.id === id);
+
+  if (!user) {
+    return res.status(404).json({
+      message: `Utilisateur ${id} non trouvé`,
+    });
+  }
+
+  res.json(user);
+});
+
+// 4. POST /contact
+
+app.post("/contact", (req, res) => {
+  const { email, message } = req.body;
+
+  // Vérifier si un champ manque
+  if (!email || !message) {
+    return res.status(400).json({
+      message: "Email et message sont obligatoires",
+    });
+  }
+
+  res.status(200).json({
+    message: "Merci, votre message a bien été reçu",
+  });
+});
+
+// 5. GET /api/users?author=Aya -> seulement ceux d’Aya
+app.get("/api/users", (req, res) => {
+  const { name } = req.query;
+  let resultat = users;
+  if (name) {
+    // si le client a précisé ? author =...
+    resultat = users.filter((a) => a.name === name);
+  }
+  res.json({ total: resultat.length, users: resultat });
 });
 
 // 4. démarrer le serveur : il attend les requ ê tes sur le port 3000
