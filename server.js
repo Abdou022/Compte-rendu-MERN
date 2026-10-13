@@ -1,7 +1,12 @@
 const express = require("express"); // 1. charger la bibliothèque Express
 const app = express(); // 2. créer l’application : c’est notre serveur
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
 const articleRoutes = require("./routes/articleRoute");
 const userRoutes = require("./routes/userRoute");
+
+// Chargement des variables d’ environnement (. env)
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 app.use(express.json()); // lit le corps JSON et le range dans req. body
@@ -10,16 +15,30 @@ app.use(express.json()); // lit le corps JSON et le range dans req. body
 app.use("/api/articles", articleRoutes);
 app.use("/api/users", userRoutes);
 
-
 // Route d’accueil pour tester le statut général du serveur
 app.get("/", (req, res) => {
   res.json({ message: " API du Blog - Serveur Modulaire Opé rationnel (SoC)" });
 });
 
-// 4. démarrer le serveur : il attend les requêtes sur le port 3000
-app.listen(PORT, () => {
-  console.log(`Serveur modulaire disponible sur http://localhost:${PORT}`);
-});
+// Connexion asynchrone à MongoDB Atlas puis démarrage de l’écoute
+(async () => {
+  try {
+    // 1. Établissement de la connexion distante
+    await connectDB(process.env.MONGODB_URI);
+    // 2. Démarrage de l’écoute du serveur HTTP
+    app.listen(PORT, () => {
+      console.log(`Serveur MERN en ecoute sur http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Erreur critique de demarrage du serveur :", err.message);
+    process.exit(1);
+  }
+})();
+
+// // 4. démarrer le serveur : il attend les requêtes sur le port 3000
+// app.listen(PORT, () => {
+//   console.log(`Serveur modulaire disponible sur http://localhost:${PORT}`);
+// });
 
 // // 3. une route : quand un client demande GET / , Express exécute cette fonction
 // app.get("/", (req, res) => {
