@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema(
         " Format d'email invalide (ex: aya@polytechnique.tn)",
       ],
     },
+    password: {
+      type: String,
+      required: [true, "Le mot de passe est obligatoire"],
+      minlength: [6, "Le mot de passe doit comporter au moins 6 caracteres"],
+    },
     age: {
       type: Number,
       min: [4, "L'age minimum autorise est de 4 ans"],
@@ -39,6 +44,6 @@ const userSchema = new mongoose.Schema(
       match: [/^\d{8}$/, "Numéro de 8 chiffres requis"],
     },
   },
-  { timestamps: true } // Ajoute automatiquement createdAt et updatedAt
+  { timestamps: true }, // Ajoute automatiquement createdAt et updatedAt
 );
 module.exports = mongoose.model("User", userSchema);
